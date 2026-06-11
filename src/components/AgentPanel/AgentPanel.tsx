@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import type { ShellInfo, ChatMessage as ChatMessageType, AiStatusResponse } from "../../types";
+import type { ShellInfo, ChatMessage as ChatMessageType, AiStatusResponse, ModelEntry } from "../../types";
 import { ShellSelector } from "./ShellSelector";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
@@ -14,6 +14,11 @@ interface AgentPanelProps {
   clearChat:        () => void;
   checkAiStatus:    () => Promise<void>;
   onExecuteCommand: (cmd: string) => void;
+  availableModels:  ModelEntry[];
+  selectedModel:    string;
+  activeModel:      string | null;
+  onModelChange:    (modelKey: string) => void;
+  onCloseAgent:     () => void;
 }
 
 export function AgentPanel({
@@ -26,6 +31,11 @@ export function AgentPanel({
   clearChat,
   checkAiStatus,
   onExecuteCommand,
+  availableModels,
+  selectedModel,
+  activeModel,
+  onModelChange,
+  onCloseAgent,
 }: AgentPanelProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -41,6 +51,9 @@ export function AgentPanel({
     }
   }, [messages, isLoading]);
 
+  const activeModelEntry = availableModels.find((m) => m.key === (activeModel ?? selectedModel));
+  const availableCount = availableModels.filter((m) => m.available).length;
+
   return (
     <aside className="agent-panel" id="agent-panel">
       {/* Cabeçalho */}
@@ -48,18 +61,45 @@ export function AgentPanel({
         <span className="agent-icon">✦</span>
         <h5>Agente IA</h5>
         {aiStatus?.available && (
-          <span className="ai-badge-status ready" title={`Modelo: ${aiStatus.model}`}>
-            {aiStatus.model || "Pronto"}
+          <span className="ai-badge-status ready" title={`Modelo ativo: ${activeModelEntry?.name ?? selectedModel}`}>
+            {activeModelEntry?.name ?? (aiStatus.model || "Pronto")}
           </span>
         )}
+        <button
+          id="btn-close-agent"
+          className="agent-close-btn"
+          onClick={onCloseAgent}
+          title="Ocultar painel da IA"
+        >
+          ×
+        </button>
       </div>
 
-      {/* Seletor de Shell */}
-      <div className="agent-shell-container">
+      {/* Seletor de Shell + Seletor de Modelo */}
+      <div className="agent-controls-row">
         <ShellSelector
           currentShell={currentShell}
           onShellChange={onShellChange}
         />
+
+        {availableModels.length > 0 && (
+          <div className="model-selector-wrap" title={`${availableCount} modelo(s) disponíveis`}>
+            <span className="model-selector-icon">🤖</span>
+            <select
+              id="model-selector"
+              className="model-select-dropdown"
+              value={selectedModel}
+              onChange={(e) => onModelChange(e.target.value)}
+              aria-label="Selecionar modelo de IA"
+            >
+              {availableModels.map((m) => (
+                <option key={m.key} value={m.key} disabled={!m.available}>
+                  {m.name}{!m.available ? " (indisponível)" : ""}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
 
       {/* Status da API / Aviso de Configuração */}
@@ -67,7 +107,7 @@ export function AgentPanel({
         <div className="ai-config-warning">
           <span className="ai-warning-icon">⚠</span>
           <div className="ai-warning-text">
-            <strong>Gemini não configurado</strong>
+            <strong>IA não configurada</strong>
             <p>{aiStatus.reason || "Configure a chave de API no backend."}</p>
           </div>
         </div>
@@ -113,4 +153,3 @@ export function AgentPanel({
     </aside>
   );
 }
-

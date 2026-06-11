@@ -26,7 +26,7 @@ export function TabBar({ tabs, activeTabId, onSwitch, onClose, onAdd }: TabBarPr
             key={tab.id}
             id={`tab-${tab.id}`}
             className={`tab-item ${isActive ? "tab-item--active" : ""}`}
-            style={isActive ? { borderBottomColor: color } : {}}
+            style={isActive ? { borderTopColor: color } : {}}
             onClick={() => onSwitch(tab.id)}
             title={`${tab.shell.icon} ${tab.shell.name} — ${tab.cwd}`}
           >

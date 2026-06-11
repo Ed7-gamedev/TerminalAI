@@ -12,9 +12,11 @@ interface TerminalTopbarProps {
   currentShell: ShellInfo;
   copied:       boolean;
   onCopy:       () => void;
+  isAgentOpen:  boolean;
+  onToggleAgent: () => void;
 }
 
-export function TerminalTopbar({ currentShell, copied, onCopy }: TerminalTopbarProps) {
+export function TerminalTopbar({ currentShell, copied, onCopy, isAgentOpen, onToggleAgent }: TerminalTopbarProps) {
   const shellColor = SHELL_COLORS[currentShell.key] ?? "#e6edf3";
 
   return (
@@ -32,8 +34,11 @@ export function TerminalTopbar({ currentShell, copied, onCopy }: TerminalTopbarP
         <span className="shell-badge-name">{currentShell.name}</span>
       </div>
 
-      {/* Ações copiar e hint */}
+      {/* Ações copiar, hint e toggle do Agente */}
       <div className="topbar-actions">
+        <span className="shell-hint">
+          shell list · shell &lt;nome&gt;
+        </span>
         <button
           id="btn-copy-terminal"
           className={`copy-btn ${copied ? "copy-btn--success" : ""}`}
@@ -43,9 +48,15 @@ export function TerminalTopbar({ currentShell, copied, onCopy }: TerminalTopbarP
           <span className="copy-btn-icon">{copied ? "✓" : "📋"}</span>
           <span>{copied ? "Copiado" : "Copiar"}</span>
         </button>
-        <span className="shell-hint">
-          shell list · shell &lt;nome&gt;
-        </span>
+        <button
+          id="btn-toggle-agent"
+          className={`toggle-agent-btn ${isAgentOpen ? "toggle-agent-btn--active" : ""}`}
+          onClick={onToggleAgent}
+          title={isAgentOpen ? "Ocultar Agente IA" : "Mostrar Agente IA"}
+        >
+          <span className="toggle-agent-btn-icon">✦</span>
+          <span>{isAgentOpen ? "Ocultar Chat" : "Chat IA"}</span>
+        </button>
       </div>
     </div>
   );

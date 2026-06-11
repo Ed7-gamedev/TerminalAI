@@ -4,11 +4,39 @@
 // Terminal-AI | Fase 3
 // ─────────────────────────────────────────────
 
+import { useState } from "react";
 import type { ChatMessage as ChatMessageType } from "../../types";
 
 interface ChatMessageProps {
   message:          ChatMessageType;
   onExecuteCommand: (cmd: string) => void;
+}
+
+function CodeHeaderActions({ code, lang }: { code: string; lang: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Falha ao copiar:", err);
+    }
+  };
+
+  return (
+    <div className="chat-code-header">
+      <span className="chat-code-lang">{lang}</span>
+      <button
+        className={`chat-code-copy-btn ${copied ? "chat-code-copy-btn--copied" : ""}`}
+        onClick={handleCopy}
+        title="Copiar código para a área de transferência"
+      >
+        {copied ? "✓ Copiado" : "📋 Copiar"}
+      </button>
+    </div>
+  );
 }
 
 export function ChatMessage({ message, onExecuteCommand }: ChatMessageProps) {
@@ -24,9 +52,7 @@ export function ChatMessage({ message, onExecuteCommand }: ChatMessageProps) {
         const code = codeMatch[2].trim();
         return (
           <div key={i} className="chat-code-block">
-            <div className="chat-code-header">
-              <span className="chat-code-lang">{lang}</span>
-            </div>
+            <CodeHeaderActions code={code} lang={lang} />
             <pre className="chat-code-pre"><code>{code}</code></pre>
             <button
               className="chat-code-run"

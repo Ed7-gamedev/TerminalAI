@@ -8,6 +8,7 @@ import {
   getCwd,
   executeCommand,
   syncSession,
+  checkCommandRisk,
 } from "./services/api";
 import { useTerminal } from "./hooks/useTerminal";
 import { useShell }    from "./hooks/useShell";
@@ -37,9 +38,49 @@ function App() {
   const { tabs, activeTabId, addTab, closeTab, switchTab, updateTab } = useTabManager(currentShell);
 
   // AI Chat
-  const { messages, isLoading, aiStatus, lastOutputRef, sendMessage, clearChat, checkAiStatus } = useAiChat(promptRef, currentShell);
+  const {
+    messages,
+    isLoading,
+    aiStatus,
+    lastOutputRef,
+    availableModels,
+    selectedModel,
+    activeModel,
+    setSelectedModel,
+    sendMessage,
+    clearChat,
+    checkAiStatus,
+  } = useAiChat(promptRef, currentShell);
 
   const [backendStatus, setBackendStatus] = useState<BackendStatus>("connecting");
+
+  // Estado para colapsar/expandir o painel da IA
+  const [isAgentOpen, setIsAgentOpen] = useState<boolean>(() => {
+    const saved = localStorage.getItem("terminal_ai_agent_open");
+    return saved !== null ? saved === "true" : true;
+  });
+
+  const toggleAgent = () => {
+    setIsAgentOpen((prev) => {
+      const next = !prev;
+      localStorage.setItem("terminal_ai_agent_open", String(next));
+      return next;
+    });
+  };
+
+  const closeAgent = () => {
+    setIsAgentOpen(false);
+    localStorage.setItem("terminal_ai_agent_open", "false");
+  };
+
+  // Interface para aprovação de comando
+  interface PendingCommand {
+    cmd: string;
+    riskLevel: "low" | "medium" | "high" | "critical";
+    impact: string[];
+  }
+  const [pendingCommand, setPendingCommand] = useState<PendingCommand | null>(null);
+  const [isRiskLoading, setIsRiskLoading] = useState(false);
 
   const isFirstMount = useRef(true);
 
@@ -196,12 +237,36 @@ function App() {
     }
   };
 
-  // Execução programática via chat do Agente IA
-  const handleExecuteFromAi = (cmd: string) => {
-    const term = termRef.current;
-    if (!term) return;
-    term.write(cmd + "\r\n");
-    handleCommand(cmd);
+  // Execução programática via chat do Agente IA com análise de risco
+  const handleExecuteFromAi = async (cmd: string) => {
+    setIsRiskLoading(true);
+    try {
+      const risk = await checkCommandRisk(cmd, selectedModel);
+      if (risk.requires_approval) {
+        setPendingCommand({
+          cmd,
+          riskLevel: risk.risk_level,
+          impact: risk.impact,
+        });
+      } else {
+        // Executa diretamente se o risco for baixo
+        const term = termRef.current;
+        if (term) {
+          term.write(cmd + "\r\n");
+          handleCommand(cmd);
+        }
+      }
+    } catch (err) {
+      console.error("Erro ao verificar risco do comando:", err);
+      // Fallback de segurança: exige aprovação se a chamada falhar
+      setPendingCommand({
+        cmd,
+        riskLevel: "medium",
+        impact: ["Executar comando no terminal local."],
+      });
+    } finally {
+      setIsRiskLoading(false);
+    }
   };
 
   const handleNewTab = () => {
@@ -274,7 +339,7 @@ function App() {
 
   // ── Render ──────────────────────────────────
   return (
-    <main className="container">
+    <main className={`container ${isAgentOpen ? "container--agent-open" : "container--agent-closed"}`}>
       {/* Status bar de conexão */}
       {backendStatus === "connecting" && (
         <div className="status-bar status-connecting">
@@ -297,6 +362,8 @@ function App() {
         onSwitchTab={switchTab}
         onCloseTab={closeTab}
         onAddTab={handleNewTab}
+        isAgentOpen={isAgentOpen}
+        onToggleAgent={toggleAgent}
       />
 
       <AgentPanel
@@ -309,7 +376,74 @@ function App() {
         clearChat={clearChat}
         checkAiStatus={checkAiStatus}
         onExecuteCommand={handleExecuteFromAi}
+        availableModels={availableModels}
+        selectedModel={selectedModel}
+        activeModel={activeModel}
+        onModelChange={setSelectedModel}
+        onCloseAgent={closeAgent}
       />
+
+      {/* Modal de Aprovação de Risco */}
+      {pendingCommand && (
+        <div className="risk-modal-overlay">
+          <div className={`risk-modal-container risk-border-${pendingCommand.riskLevel}`}>
+            <div className="risk-modal-header">
+              <span className="risk-modal-icon">🛡️</span>
+              <h3>Confirmação de Execução</h3>
+              <span className={`risk-badge risk-${pendingCommand.riskLevel}`}>
+                {pendingCommand.riskLevel.toUpperCase()}
+              </span>
+            </div>
+            <div className="risk-modal-body">
+              <p className="risk-subtitle">A IA sugeriu o seguinte comando:</p>
+              <pre className="risk-code-display">
+                <code>{pendingCommand.cmd}</code>
+              </pre>
+              
+              <div className="risk-impact-section">
+                <strong>Impacto Esperado:</strong>
+                <ul>
+                  {pendingCommand.impact.map((imp, idx) => (
+                    <li key={idx}>{imp}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <div className="risk-modal-footer">
+              <button 
+                className="risk-btn-cancel" 
+                onClick={() => setPendingCommand(null)}
+              >
+                Cancelar
+              </button>
+              <button 
+                className={`risk-btn-approve risk-btn-${pendingCommand.riskLevel}`}
+                onClick={() => {
+                  const cmdToRun = pendingCommand.cmd;
+                  setPendingCommand(null);
+                  const term = termRef.current;
+                  if (term) {
+                    term.write(cmdToRun + "\r\n");
+                    handleCommand(cmdToRun);
+                  }
+                }}
+              >
+                Aprovar e Executar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Loader de Análise de Risco */}
+      {isRiskLoading && (
+        <div className="risk-loader-overlay">
+          <div className="risk-loader-container">
+            <div className="risk-loader-spinner"></div>
+            <p>Analisando segurança do comando...</p>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

@@ -65,6 +65,7 @@ export interface AiChatResponse {
   reply: string;
   commands: string[];
   error: string;
+  active_model?: string;
 }
 
 export interface AiStatusResponse {
@@ -72,4 +73,18 @@ export interface AiStatusResponse {
   model: string | null;
   reason: string | null;
 }
+
+export interface ModelEntry {
+  key: string;
+  name: string;
+  provider: string;
+  available: boolean;
+}
+
+export interface RiskResponse {
+  risk_level: "low" | "medium" | "high" | "critical";
+  impact: string[];
+  requires_approval: boolean;
+}
+
 

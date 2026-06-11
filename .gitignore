@@ -61,3 +61,8 @@ src-tauri/gen/schemas
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Planning Artifacts
+implementation_plan.md
+task.md
+walkthrough.md

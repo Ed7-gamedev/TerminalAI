@@ -1,34 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
 /* ============================================================
-   Design System — Terminal AI
+   Design System — Terminal AI (Premium Zinc Slate Theme)
    ============================================================ */
 :root {
-  --bg-primary:   #0d1117;
-  --bg-surface:   #161b22;
-  --bg-elevated:  #21262d;
-  --bg-overlay:   #30363d;
+  --bg-primary:   #09090b;       /* Zinc 950 - Terminal & Background */
+  --bg-surface:   #18181b;       /* Zinc 900 - Headers, sidebar & panels */
+  --bg-elevated:  #27272a;       /* Zinc 800 - Cards, inputs and hovers */
+  --bg-overlay:   #3f3f46;       /* Zinc 700 - Borders and active states */
 
-  --border-subtle:  rgba(255, 255, 255, 0.06);
-  --border-default: rgba(255, 255, 255, 0.14);
+  --border-subtle:  rgba(255, 255, 255, 0.04);
+  --border-default: rgba(255, 255, 255, 0.08);
+  --border-focus:   rgba(59, 130, 246, 0.45);
 
-  --accent:         #58a6ff;
-  --accent-success: #3fb950;
-  --accent-danger:  #f85149;
-  --accent-warning: #d29922;
+  --accent:         #3b82f6;       /* Tech blue */
+  --accent-glow:    rgba(59, 130, 246, 0.12);
+  --accent-success: #10b981;       /* Emerald */
+  --accent-danger:  #f43f5e;       /* Rose */
+  --accent-warning: #f59e0b;       /* Amber */
 
-  --text-primary:   #e6edf3;
-  --text-secondary: #8b949e;
-  --text-muted:     #484f58;
+  --text-primary:   #f4f4f5;       /* Zinc 100 - High contrast text */
+  --text-secondary: #a1a1aa;       /* Zinc 400 - Muted secondary text */
+  --text-muted:     #52525b;       /* Zinc 600 - Low contrast hints */
 
-  --font-ui:   'Inter', system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Cascadia Code', 'Consolas', monospace;
+  --font-ui:   'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Fira Code', 'JetBrains Mono', 'Cascadia Code', monospace;
 
+  --radius-xs: 4px;
   --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 12px 24px -4px rgba(0, 0, 0, 0.6), 0 4px 12px -2px rgba(0, 0, 0, 0.5);
 }
 
 /* ============================================================
-   Reset
+   Reset e Globais
    ============================================================ */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -42,22 +52,47 @@ body, html, #root {
   color: var(--text-primary);
   font-family: var(--font-ui);
   overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar Personalizado (VS Code Style) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--bg-elevated);
+  border-radius: 4px;
+  border: 2px solid transparent;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--bg-overlay);
 }
 
 /* ============================================================
-   Layout Principal — CSS Grid
+   Layout Principal (Grid com animação de colapso)
    ============================================================ */
 .container {
   display: grid;
-  grid-template-columns: 1fr 280px;
+  grid-template-columns: 1fr 340px;
   grid-template-rows: 1fr;
   height: 100vh;
   width: 100vw;
-  position: relative; /* para o status-bar absolute */
+  position: relative;
+  transition: grid-template-columns 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.container--agent-closed {
+  grid-template-columns: 1fr 0px;
 }
 
 /* ============================================================
-   Terminal e Wrapper
+   Terminal Wrapper
    ============================================================ */
 .terminal-wrapper {
   grid-column: 1;
@@ -74,49 +109,41 @@ body, html, #root {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 40px;
+  height: 38px;
   padding: 0 16px;
   background: var(--bg-surface);
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-default);
   flex-shrink: 0;
 }
 
 .window-dots {
   display: flex;
-  gap: 8px;
+  gap: 7px;
   align-items: center;
 }
 
 .dot {
-  width: 10px;
-  height: 10px;
+  width: 11px;
+  height: 11px;
   border-radius: 50%;
   display: inline-block;
-  opacity: 0.85;
+  opacity: 0.9;
 }
 
-.dot-red {
-  background-color: #ff5f56;
-}
-
-.dot-yellow {
-  background-color: #ffbd2e;
-}
-
-.dot-green {
-  background-color: #27c93f;
-}
+.dot-red { background-color: #f43f5e; }
+.dot-yellow { background-color: #fbbf24; }
+.dot-green { background-color: #10b981; }
 
 .shell-badge {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 12px;
+  gap: 6px;
+  font-size: 11px;
   font-weight: 600;
   font-family: var(--font-mono);
-  background: rgba(255, 255, 255, 0.04);
-  padding: 4px 10px;
-  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 3px 9px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border-subtle);
 }
 
@@ -124,26 +151,28 @@ body, html, #root {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: 11px;
 }
 
 .shell-badge-name {
   line-height: 1;
 }
 
-.shell-hint {
-  font-size: 11px;
-  color: var(--text-muted);
-  font-family: var(--font-mono);
-}
-
 .topbar-actions {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
 }
 
-.copy-btn {
+.shell-hint {
+  font-size: 10.5px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  margin-right: 8px;
+}
+
+/* Botões de Ação da Topbar */
+.copy-btn, .toggle-agent-btn {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -157,28 +186,35 @@ body, html, #root {
   cursor: pointer;
   transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   user-select: none;
+  height: 24px;
 }
 
-.copy-btn:hover {
+.copy-btn:hover, .toggle-agent-btn:hover {
   background: var(--bg-overlay);
   color: var(--text-primary);
   border-color: var(--border-default);
 }
 
-.copy-btn:active {
+.copy-btn:active, .toggle-agent-btn:active {
   transform: scale(0.96);
 }
 
-.copy-btn-icon {
-  font-size: 12px;
+.copy-btn-icon, .toggle-agent-btn-icon {
+  font-size: 11px;
   display: flex;
   align-items: center;
 }
 
 .copy-btn--success {
-  background: rgba(63, 185, 80, 0.15) !important;
+  background: rgba(16, 185, 129, 0.12) !important;
   color: var(--accent-success) !important;
-  border-color: rgba(63, 185, 80, 0.4) !important;
+  border-color: rgba(16, 185, 129, 0.35) !important;
+}
+
+.toggle-agent-btn--active {
+  background: var(--accent-glow) !important;
+  color: var(--accent) !important;
+  border-color: rgba(59, 130, 246, 0.35) !important;
 }
 
 .terminal-container {
@@ -187,15 +223,126 @@ body, html, #root {
   height: 100%;
   overflow: hidden;
   padding: 12px;
+  background: var(--bg-primary);
 }
 
-/* Ajusta padding interno do xterm para não colar nas bordas */
+/* Ajuste interno xterm */
 .terminal-container .xterm-viewport {
   padding: 4px;
 }
 
 /* ============================================================
-   Painel do Agente IA
+   Abas (TabBar - Estilo VS Code)
+   ============================================================ */
+.tab-bar {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-default);
+  padding: 0 8px;
+  height: 34px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-shrink: 0;
+}
+.tab-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #141416; /* Ligeiramente mais escuro que o bg-surface */
+  border-right: 1px solid var(--border-subtle);
+  border-top: 2px solid transparent;
+  padding: 0 12px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  height: 34px;
+  max-width: 140px;
+  box-sizing: border-box;
+}
+
+.tab-item:hover {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+.tab-item--active {
+  background: var(--bg-primary) !important;
+  color: var(--text-primary);
+  border-right: 1px solid var(--border-default);
+  border-left: 1px solid var(--border-default);
+  border-top: 2px solid var(--accent); /* Cor do Shell é aplicada inline como borderTopColor */
+  font-weight: 600;
+}
+
+.tab-shell-icon {
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.tab-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 90px;
+}
+
+.tab-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0;
+  line-height: 1;
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  margin-left: auto;
+}
+
+.tab-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--accent-danger);
+}
+
+.tab-new {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: var(--radius-xs);
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  margin-left: 6px;
+  transition: all 0.15s ease;
+}
+
+.tab-new:hover {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+}
+
+/* ============================================================
+   Painel do Agente IA (Sidebar)
    ============================================================ */
 .agent-panel {
   grid-column: 2;
@@ -203,42 +350,220 @@ body, html, #root {
   display: flex;
   flex-direction: column;
   background: var(--bg-surface);
-  border-left: 1px solid var(--border-subtle);
+  border-left: 1px solid var(--border-default);
   height: 100vh;
   overflow: hidden;
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+}
+
+.container--agent-closed .agent-panel {
+  width: 0;
+  opacity: 0;
+  pointer-events: none;
+  border-left: none;
 }
 
 .agent-header {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 16px;
-  border-bottom: 1px solid var(--border-subtle);
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-default);
   flex-shrink: 0;
+  height: 38px;
 }
 
 .agent-icon {
   color: var(--accent);
-  font-size: 18px;
+  font-size: 15px;
   line-height: 1;
+  display: flex;
+  align-items: center;
 }
 
 .agent-header h5 {
   margin: 0;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 11.5px;
+  font-weight: 700;
   color: var(--text-primary);
-  letter-spacing: 0.3px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
 }
 
+.agent-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 15px;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  margin-left: auto;
+}
+
+.agent-close-btn:hover {
+  background: var(--bg-elevated);
+  color: var(--accent-danger);
+}
+
+/* Seletor de Shell + Modelo (IDE Toolbar Row) */
+.agent-controls-row {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  flex-shrink: 0;
+}
+
+.shell-selector-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.shell-select-label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  user-select: none;
+}
+
+.shell-select-wrapper, .model-selector-wrap {
+  display: flex;
+  align-items: center;
+  position: relative;
+  flex: 1;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: 0 8px;
+  transition: all 0.15s ease;
+  height: 28px;
+}
+
+.model-selector-wrap {
+  flex: 1;
+  margin-top: 12px; /* Alinha com o dropdown do shell que possui label */
+}
+
+.shell-select-wrapper:focus-within, .model-selector-wrap:focus-within {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.shell-select-icon, .model-selector-icon {
+  font-size: 11px;
+  margin-right: 6px;
+  display: flex;
+  align-items: center;
+  opacity: 0.8;
+}
+
+.shell-select-dropdown, .model-select-dropdown {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  width: 100%;
+  outline: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  height: 100%;
+  padding-right: 12px;
+}
+
+.shell-select-dropdown option, .model-select-dropdown option {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+.shell-select-dropdown option:disabled, .model-select-dropdown option:disabled {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.shell-select-wrapper::after, .model-selector-wrap::after {
+  content: "▾";
+  font-size: 8px;
+  color: var(--text-secondary);
+  pointer-events: none;
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.ai-badge-status {
+  margin-left: 6px;
+  font-size: 9px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 99px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ai-badge-status.ready {
+  background: rgba(16, 185, 129, 0.08);
+  color: var(--accent-success);
+  border: 1px solid rgba(16, 185, 129, 0.15);
+}
+
+/* Aviso de Configuração de IA */
+.ai-config-warning {
+  display: flex;
+  gap: 8px;
+  background: rgba(245, 158, 11, 0.06);
+  border: 1px solid rgba(245, 158, 11, 0.15);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  margin: 10px 10px 0 10px;
+  flex-shrink: 0;
+}
+
+.ai-warning-icon {
+  font-size: 14px;
+  color: var(--accent-warning);
+  line-height: 1.2;
+}
+
+.ai-warning-text strong {
+  display: block;
+  font-size: 10px;
+  color: var(--text-primary);
+  margin-bottom: 1px;
+}
+
+.ai-warning-text p {
+  margin: 0;
+  font-size: 9.5px;
+  color: var(--text-secondary);
+  line-height: 1.3;
+}
+
+/* ============================================================
+   Área de Chat e Balões de Mensagem
+   ============================================================ */
 .agent-chat-area {
   flex: 1;
   overflow-y: auto;
-  padding: 12px;
+  padding: 14px 12px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
+  background: var(--bg-surface);
 }
 
 .agent-placeholder {
@@ -250,319 +575,49 @@ body, html, #root {
   height: 100%;
   text-align: center;
   color: var(--text-secondary);
+  padding: 0 12px;
 }
 
-.agent-placeholder span {
-  font-size: 32px;
-  opacity: 0.5;
+.placeholder-icon {
+  font-size: 28px;
+  opacity: 0.6;
+  margin-bottom: 2px;
 }
 
 .agent-placeholder p {
   margin: 0;
-  font-size: 12px;
+  font-size: 11.5px;
   line-height: 1.5;
-  max-width: 180px;
-  color: var(--text-muted);
-}
-
-/* ============================================================
-   Shell List Panel
-   ============================================================ */
-.shell-selector-panel {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-}
-
-.shell-select-label {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
   color: var(--text-secondary);
-  user-select: none;
+  max-width: 220px;
 }
 
-.shell-select-wrapper {
-  display: flex;
-  align-items: center;
-  position: relative;
-  flex: 1;
-  background: var(--bg-primary);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  padding: 4px 8px;
-  transition: all 0.15s ease;
-}
-
-.shell-select-wrapper:focus-within {
-  border-color: rgba(88, 166, 255, 0.5);
-  box-shadow: 0 0 4px rgba(88, 166, 255, 0.15);
-}
-
-.shell-select-icon {
-  font-size: 12px;
-  margin-right: 6px;
-  display: flex;
-  align-items: center;
-}
-
-.shell-select-dropdown {
-  background: transparent;
-  border: none;
-  color: var(--text-primary);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 500;
-  width: 100%;
-  outline: none;
-  cursor: pointer;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-}
-
-.shell-select-wrapper::after {
-  content: "▾";
-  font-size: 10px;
-  color: var(--text-secondary);
-  pointer-events: none;
-  margin-left: auto;
-  padding-left: 4px;
-}
-
-/* ============================================================================
-   Status Bar (conexão com backend)
-   ============================================================ */
-.status-bar {
-  position: absolute;
-  top: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 12px;
-  border-radius: 99px;
-  font-size: 11px;
-  font-weight: 500;
-  backdrop-filter: blur(8px);
-  pointer-events: none;
-  animation: fadeIn 0.3s ease;
-}
-
-.status-connecting {
-  background: rgba(210, 153, 34, 0.15);
-  border: 1px solid rgba(210, 153, 34, 0.3);
-  color: var(--accent-warning);
-}
-
-.status-error {
-  background: rgba(248, 81, 73, 0.15);
-  border: 1px solid rgba(248, 81, 73, 0.3);
-  color: var(--accent-danger);
-}
-
-.status-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-  flex-shrink: 0;
-}
-
-.status-connecting .status-dot {
-  animation: pulse 1.2s ease-in-out infinite;
-}
-
-/* ============================================================
-   Animations
-   ============================================================ */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateX(-50%) translateY(-4px); }
-  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.3; }
-}
-
-/* ============================================================
-   Abas (TabBar)
-   ============================================================ */
-.tab-bar {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: var(--bg-surface);
-  border-bottom: 1px solid var(--border-subtle);
-  padding: 4px 8px 0 8px;
-  height: 38px;
-  overflow-x: auto;
-  scrollbar-width: none; /* Firefox */
-  flex-shrink: 0;
-}
-.tab-bar::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
-}
-
-.tab-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid var(--border-subtle);
-  border-bottom: none;
-  border-top-left-radius: 6px;
-  border-top-right-radius: 6px;
-  padding: 6px 12px;
-  font-size: 11px;
-  color: var(--text-secondary);
-  cursor: pointer;
-  user-select: none;
-  transition: all 0.15s ease;
-  position: relative;
-  top: 1px;
-  height: 32px;
-  max-width: 140px;
-}
-.tab-item:hover {
-  background: var(--bg-elevated);
-  color: var(--text-primary);
-}
-.tab-item--active {
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  border-color: var(--border-default);
-  border-bottom: 2px solid var(--accent); /* Cor dinâmica injetada por inline style */
-  font-weight: 500;
-  height: 33px;
-}
-
-.tab-shell-icon {
-  font-size: 11px;
-  display: flex;
-  align-items: center;
-}
-.tab-label {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.tab-close {
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  cursor: pointer;
-  font-size: 13px;
-  padding: 0 2px;
-  line-height: 1;
-  border-radius: 50%;
-  width: 14px;
-  height: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.15s ease;
-}
-.tab-close:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--accent-danger);
-}
-
-.tab-new {
-  background: transparent;
-  border: 1px dashed var(--border-subtle);
-  color: var(--text-secondary);
-  cursor: pointer;
-  border-radius: 4px;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  margin-left: 6px;
-  transition: all 0.15s ease;
-}
-.tab-new:hover {
-  background: var(--bg-elevated);
-  color: var(--text-primary);
-  border-color: var(--border-default);
-  transform: scale(1.05);
-}
-
-/* ============================================================
-   Chat IA e Painel lateral
-   ============================================================ */
-.agent-shell-container {
-  padding: 12px 12px 4px 12px;
-  border-bottom: 1px solid var(--border-subtle);
-  flex-shrink: 0;
-}
-
-.ai-badge-status {
-  margin-left: auto;
-  font-size: 9px;
-  font-weight: 600;
-  padding: 2px 6px;
-  border-radius: 99px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-.ai-badge-status.ready {
-  background: rgba(63, 185, 80, 0.1);
-  color: var(--accent-success);
-  border: 1px solid rgba(63, 185, 80, 0.2);
-}
-
-.ai-config-warning {
-  display: flex;
-  gap: 10px;
-  background: rgba(210, 153, 34, 0.08);
-  border: 1px solid rgba(210, 153, 34, 0.2);
-  border-radius: 6px;
+.placeholder-tip {
+  font-size: 10px !important;
+  color: var(--text-muted) !important;
+  background: rgba(255, 255, 255, 0.01);
   padding: 10px;
-  margin: 12px 12px 0 12px;
-  flex-shrink: 0;
-}
-.ai-warning-icon {
-  font-size: 16px;
-  color: var(--accent-warning);
-  line-height: 1.2;
-}
-.ai-warning-text strong {
-  display: block;
-  font-size: 11px;
-  color: var(--text-primary);
-  margin-bottom: 2px;
-}
-.ai-warning-text p {
-  margin: 0;
-  font-size: 10px;
-  color: var(--text-secondary);
-  line-height: 1.4;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  margin-top: 4px;
 }
 
 .chat-messages-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding-bottom: 10px;
+  gap: 14px;
+  padding-bottom: 12px;
 }
 
 .chat-msg {
   display: flex;
   gap: 8px;
   max-width: 100%;
-  animation: slideIn 0.2s ease;
+  animation: slideIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes slideIn {
-  from { opacity: 0; transform: translateY(4px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -571,81 +626,114 @@ body, html, #root {
 }
 
 .chat-msg-avatar {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  background: rgba(88, 166, 255, 0.15);
+  background: rgba(59, 130, 246, 0.1);
   color: var(--accent);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 11px;
   flex-shrink: 0;
-  border: 1px solid rgba(88, 166, 255, 0.3);
+  border: 1px solid rgba(59, 130, 246, 0.2);
 }
 
 .chat-msg-bubble {
   background: var(--bg-elevated);
-  border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
   padding: 8px 12px;
-  font-size: 12px;
+  font-size: 11.5px;
   line-height: 1.5;
   color: var(--text-primary);
-  max-width: 85%;
+  max-width: 88%;
   word-wrap: break-word;
+  box-shadow: var(--shadow-sm);
 }
+
 .chat-msg-user .chat-msg-bubble {
-  background: rgba(88, 166, 255, 0.1);
-  border-color: rgba(88, 166, 255, 0.2);
+  background: rgba(59, 130, 246, 0.08);
+  border-color: rgba(59, 130, 246, 0.2);
 }
 
 .chat-text {
   white-space: pre-wrap;
 }
 
-/* Blocos de código em markdown */
+/* Blocos de Código em Markdown */
 .chat-code-block {
-  margin-top: 8px;
-  margin-bottom: 8px;
+  margin: 10px 0;
   background: var(--bg-primary);
-  border: 1px solid var(--border-subtle);
-  border-radius: 6px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
   overflow: hidden;
 }
+
 .chat-code-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.02);
   padding: 4px 8px;
   border-bottom: 1px solid var(--border-subtle);
 }
+
 .chat-code-lang {
-  font-size: 10px;
+  font-size: 9.5px;
   font-family: var(--font-mono);
-  color: var(--text-secondary);
+  color: var(--text-muted);
+  font-weight: 500;
+  text-transform: uppercase;
 }
+
+.chat-code-copy-btn {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  padding: 2px 8px;
+  border-radius: var(--radius-xs);
+  font-size: 9px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.chat-code-copy-btn:hover {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border-color: var(--border-default);
+}
+
+.chat-code-copy-btn--copied {
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: var(--accent-success) !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
 .chat-code-pre {
   margin: 0;
-  padding: 8px;
+  padding: 8px 10px;
   overflow-x: auto;
   background: transparent;
 }
+
 .chat-code-pre code {
   font-family: var(--font-mono);
   font-size: 11px;
-  color: #c9d1d9;
+  color: #e4e4e7;
 }
+
 .chat-code-run {
   width: 100%;
-  background: rgba(88, 166, 255, 0.1);
+  background: rgba(59, 130, 246, 0.08);
   border: none;
   border-top: 1px solid var(--border-subtle);
   color: var(--accent);
   padding: 6px 12px;
-  font-size: 11px;
-  font-weight: 500;
+  font-size: 10.5px;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
   display: flex;
@@ -653,78 +741,91 @@ body, html, #root {
   justify-content: center;
   gap: 4px;
 }
+
 .chat-code-run:hover {
-  background: rgba(88, 166, 255, 0.2);
+  background: rgba(59, 130, 246, 0.15);
   color: var(--text-primary);
 }
 
-/* Chips de sugestões rápidas */
+/* Chips de Sugestões */
 .chat-suggestions {
   margin-top: 10px;
-  border-top: 1px dashed var(--border-subtle);
+  border-top: 1px dashed var(--border-default);
   padding-top: 8px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
 }
+
 .chat-suggestions-label {
-  font-size: 10px;
-  color: var(--text-secondary);
-  font-weight: 500;
-  margin-bottom: 2px;
+  font-size: 9.5px;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 1px;
 }
+
 .chat-suggestion-chip {
   background: var(--bg-primary);
-  border: 1px solid var(--border-subtle);
-  border-radius: 4px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
   padding: 4px 8px;
   font-size: 10px;
   font-family: var(--font-mono);
   color: var(--accent);
   cursor: pointer;
   text-align: left;
-  transition: all 0.15s ease;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .chat-suggestion-chip:hover {
-  background: rgba(88, 166, 255, 0.08);
-  border-color: rgba(88, 166, 255, 0.3);
-  padding-left: 10px;
+  background: var(--accent-glow);
+  border-color: var(--accent);
+  padding-left: 11px;
 }
 
-/* Área de Input do chat */
+/* ============================================================
+   Caixa de Entrada de Texto do Chat
+   ============================================================ */
 .chat-input-area {
-  padding: 12px;
-  border-top: 1px solid var(--border-subtle);
+  padding: 10px 12px 12px 12px;
+  border-top: 1px solid var(--border-default);
   display: flex;
   flex-direction: column;
   gap: 8px;
   background: var(--bg-surface);
   flex-shrink: 0;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.15);
 }
 
 .chat-textarea {
   width: 100%;
   background: var(--bg-primary);
-  border: 1px solid var(--border-subtle);
-  border-radius: 6px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
   color: var(--text-primary);
   font-family: var(--font-ui);
-  font-size: 12px;
+  font-size: 11.5px;
   padding: 8px 10px;
   resize: none;
   outline: none;
-  min-height: 34px;
-  line-height: 1.4;
-  transition: border-color 0.2s ease;
+  min-height: 32px;
+  line-height: 1.45;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
+
 .chat-textarea:focus {
-  border-color: rgba(88, 166, 255, 0.6);
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 2px var(--accent-glow);
 }
+
 .chat-textarea:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .chat-input-actions {
@@ -735,52 +836,65 @@ body, html, #root {
 
 .chat-btn-clear {
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   color: var(--text-secondary);
   cursor: pointer;
-  font-size: 14px;
+  font-size: 13px;
   padding: 4px 8px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
 }
-.chat-btn-clear:hover {
+
+.chat-btn-clear:hover:not(:disabled) {
   background: var(--bg-elevated);
   color: var(--accent-danger);
+  border-color: var(--border-subtle);
 }
+
 .chat-btn-clear:disabled {
-  opacity: 0.3;
+  opacity: 0.25;
   cursor: not-allowed;
 }
 
 .chat-btn-send {
   background: var(--accent);
   border: none;
-  color: var(--bg-primary);
-  width: 26px;
-  height: 26px;
+  color: #fff;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 13px;
   transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-sm);
 }
+
 .chat-btn-send:hover:not(:disabled) {
-  transform: translateY(-1px) scale(1.05);
-  background: #79c0ff;
+  background: var(--accent-hover);
+  transform: translateY(-1px);
 }
+
+.chat-btn-send:active:not(:disabled) {
+  transform: translateY(0);
+}
+
 .chat-btn-send:disabled {
   background: var(--bg-elevated);
   color: var(--text-muted);
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 .chat-spinner {
-  width: 12px;
-  height: 12px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  width: 10px;
+  height: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.25);
   border-top-color: #fff;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -793,17 +907,19 @@ body, html, #root {
 /* Dots digitando... */
 .thinking-dots {
   display: flex;
-  gap: 4px;
+  gap: 3px;
   align-items: center;
-  height: 14px;
+  height: 12px;
 }
+
 .thinking-dots span {
-  width: 4px;
-  height: 4px;
+  width: 3.5px;
+  height: 3.5px;
   border-radius: 50%;
   background-color: var(--text-secondary);
   animation: thinkingPulse 1.4s infinite ease-in-out both;
 }
+
 .thinking-dots span:nth-child(1) { animation-delay: -0.32s; }
 .thinking-dots span:nth-child(2) { animation-delay: -0.16s; }
 
@@ -812,18 +928,368 @@ body, html, #root {
   40% { transform: scale(1); opacity: 1; }
 }
 
-.placeholder-icon {
-  font-size: 24px;
-  margin-bottom: 4px;
-  opacity: 0.7;
+/* ============================================================================
+   Status Bar (conexão com backend - Flutuante e Glassmorphic)
+   ============================================================================ */
+.status-bar {
+  position: absolute;
+  top: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 99px;
+  font-size: 10.5px;
+  font-weight: 600;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  pointer-events: none;
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: var(--shadow-md);
 }
 
-.placeholder-tip {
-  font-size: 10px !important;
-  color: var(--text-muted) !important;
-  max-width: 200px !important;
+.status-connecting {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  color: var(--accent-warning);
+}
+
+.status-error {
+  background: rgba(244, 63, 94, 0.08);
+  border: 1px solid rgba(244, 63, 94, 0.25);
+  color: var(--accent-danger);
+}
+
+.status-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.status-connecting .status-dot {
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+/* ============================================================
+   Modal de Confirmação de Risco (Glassmorphic)
+   ============================================================ */
+.risk-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(9, 9, 11, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.risk-modal-container {
+  width: 90%;
+  max-width: 480px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-default);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.risk-border-low { border-color: rgba(16, 185, 129, 0.3); }
+.risk-border-medium { border-color: rgba(245, 158, 11, 0.3); }
+.risk-border-high { border-color: rgba(244, 63, 94, 0.3); }
+.risk-border-critical { 
+  border-color: var(--accent-danger); 
+  box-shadow: 0 0 24px rgba(244, 63, 94, 0.15);
+}
+
+.risk-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border-default);
   background: rgba(255, 255, 255, 0.01);
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid var(--border-subtle);
+}
+
+.risk-modal-icon {
+  font-size: 16px;
+}
+
+.risk-modal-header h3 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  flex: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.risk-badge {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+.risk-badge.risk-low {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--accent-success);
+  border: 1px solid rgba(16, 185, 129, 0.18);
+}
+.risk-badge.risk-medium {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--accent-warning);
+  border: 1px solid rgba(245, 158, 11, 0.18);
+}
+.risk-badge.risk-high {
+  background: rgba(244, 63, 94, 0.1);
+  color: var(--accent-danger);
+  border: 1px solid rgba(244, 63, 94, 0.18);
+}
+.risk-badge.risk-critical {
+  background: rgba(244, 63, 94, 0.2);
+  color: #ff7086;
+  border: 1px solid var(--accent-danger);
+  animation: blinkRed 1.5s infinite;
+}
+
+.risk-modal-body {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.risk-subtitle {
+  margin: 0;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.risk-code-display {
+  margin: 0;
+  padding: 10px 12px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  max-height: 110px;
+  overflow-y: auto;
+}
+.risk-code-display code {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: #fdba74;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.risk-impact-section {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.005);
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border-default);
+}
+
+.risk-impact-section strong {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.risk-impact-section ul {
+  margin: 0;
+  padding-left: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.risk-impact-section li {
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.risk-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 18px;
+  border-top: 1px solid var(--border-default);
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.risk-btn-cancel {
+  background: transparent;
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+  border-radius: var(--radius-sm);
+  padding: 6px 14px;
+  font-size: 11.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.risk-btn-cancel:hover {
+  background: var(--bg-elevated);
+  border-color: var(--text-secondary);
+}
+
+.risk-btn-approve {
+  border: none;
+  color: #fff;
+  border-radius: var(--radius-sm);
+  padding: 6px 16px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-sm);
+}
+.risk-btn-approve:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+.risk-btn-approve:active {
+  transform: translateY(0);
+}
+
+.risk-btn-low { background-color: var(--accent-success); }
+.risk-btn-low:hover { background-color: #34d399; }
+
+.risk-btn-medium { background-color: var(--accent-warning); }
+.risk-btn-medium:hover { background-color: #fbbf24; }
+
+.risk-btn-high { background-color: var(--accent-danger); }
+.risk-btn-high:hover { background-color: #fb7185; }
+
+.risk-btn-critical { 
+  background-color: var(--accent-danger);
+  animation: pulseShadowRed 1.5s infinite;
+}
+.risk-btn-critical:hover { background-color: #fb7185; }
+
+/* Loader Overlay de Risco */
+.risk-loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(9, 9, 11, 0.65);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: modalFadeIn 0.2s ease;
+}
+
+.risk-loader-container {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 18px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--shadow-md);
+}
+
+.risk-loader-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3.5px solid rgba(59, 130, 246, 0.15);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.risk-loader-container p {
+  margin: 0;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+/* Animações e break points responsivos adicionais */
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes modalSlideUp {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes blinkRed {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes pulseShadowRed {
+  0% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.45); }
+  70% { box-shadow: 0 0 0 8px rgba(244, 63, 94, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0); }
+}
+
+/* Responsividade Geral */
+@media (max-width: 768px) {
+  .container {
+    grid-template-columns: 1fr !important;
+  }
+  .container--agent-open {
+    display: flex;
+    flex-direction: column;
+  }
+  .container--agent-open .terminal-wrapper {
+    height: 55vh;
+  }
+  .container--agent-open .agent-panel {
+    height: 45vh;
+    width: 100% !important;
+    border-left: none;
+    border-top: 1px solid var(--border-default);
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+  .container--agent-closed .agent-panel {
+    display: none;
+    height: 0;
+    width: 0 !important;
+  }
+  .status-bar {
+    top: 42px;
+  }
 }

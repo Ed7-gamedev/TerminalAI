@@ -14,6 +14,8 @@ interface TerminalPaneProps {
   onSwitchTab:  (id: string) => void;
   onCloseTab:   (id: string) => void;
   onAddTab:     () => void;
+  isAgentOpen:  boolean;
+  onToggleAgent: () => void;
 }
 
 export function TerminalPane({
@@ -26,6 +28,8 @@ export function TerminalPane({
   onSwitchTab,
   onCloseTab,
   onAddTab,
+  isAgentOpen,
+  onToggleAgent,
 }: TerminalPaneProps) {
   return (
     <div className="terminal-wrapper">
@@ -40,6 +44,8 @@ export function TerminalPane({
         currentShell={currentShell}
         copied={copied}
         onCopy={onCopy}
+        isAgentOpen={isAgentOpen}
+        onToggleAgent={onToggleAgent}
       />
       <div ref={terminalRef} className="terminal-container" />
     </div>

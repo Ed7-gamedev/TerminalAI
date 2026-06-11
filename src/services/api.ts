@@ -11,6 +11,8 @@ import type {
   AiChatResponse,
   AiStatusResponse,
   AiContext,
+  RiskResponse,
+  ModelEntry,
 } from "../types";
 
 export const API_BASE = "http://127.0.0.1:8000";
@@ -106,18 +108,29 @@ export async function getAiStatus(): Promise<AiStatusResponse> {
 /**
  * Envia uma mensagem ao agente IA com contexto do terminal.
  * Retorna a resposta em texto e uma lista de comandos sugeridos.
+ * @param model - Chave do modelo de IA a usar (ex: "gemini-2.5-flash", "llama-3.3-70b-versatile").
  */
 export async function aiChat(
   message: string,
-  context: AiContext
+  context: AiContext,
+  model?: string
 ): Promise<AiChatResponse> {
   const res = await fetch(`${API_BASE}/ai/chat`, {
     method: "POST",
     headers: JSON_HEADERS,
-    body: JSON.stringify({ message, ...context }),
+    body: JSON.stringify({ message, ...context, ...(model ? { model } : {}) }),
     signal: AbortSignal.timeout(30_000),
   });
   if (!res.ok) throw new Error(`POST /ai/chat: ${res.status}`);
+  return res.json();
+}
+
+/**
+ * Busca a lista de modelos de IA suportados e sua disponibilidade.
+ */
+export async function getAvailableModels(): Promise<{ models: ModelEntry[] }> {
+  const res = await fetch(`${API_BASE}/ai/models`);
+  if (!res.ok) throw new Error(`GET /ai/models: ${res.status}`);
   return res.json();
 }
 
@@ -135,6 +148,20 @@ export async function syncSession(
     signal: AbortSignal.timeout(5_000),
   });
   if (!res.ok) throw new Error(`POST /sync-session: ${res.status}`);
+  return res.json();
+}
+
+/**
+ * Verifica o risco de execução de um comando no backend.
+ */
+export async function checkCommandRisk(cmd: string, model?: string): Promise<RiskResponse> {
+  const res = await fetch(`${API_BASE}/ai/check-risk`, {
+    method: "POST",
+    headers: JSON_HEADERS,
+    body: JSON.stringify({ cmd, ...(model ? { model } : {}) }),
+    signal: AbortSignal.timeout(10_000),
+  });
+  if (!res.ok) throw new Error(`POST /ai/check-risk: ${res.status}`);
   return res.json();
 }
 
